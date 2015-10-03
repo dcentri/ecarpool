@@ -1,4 +1,4 @@
-package com.dicentrix.myapplication.util;
+package com.dicentrix.ecarpool.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

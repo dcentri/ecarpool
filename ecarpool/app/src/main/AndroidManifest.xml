@@ -1,22 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dicentrix.myapplication" >
+    package="com.dicentrix.ecarpool" >
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:label="@string/app_name" >
+
+        <!-- Splash screen activity -->
         <activity
-            android:name=".loadScreen"
+            android:name=".main.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <!-- Connection activity -->
+        <activity
+            android:name=".access.ConnectionActivity"
+            android:label="@string/lbl_connection"
+            android:parentActivityName=".main.SplashScreen"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+
+        <!-- SignUp activity -->
+        <activity
+            android:name=".access.SignUpActivity"
+            android:label="@string/lbl_signUp"
+            android:parentActivityName=".access.ConnectionActivity"
+             >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+
+        <!-- Dashboard activity -->
+        <activity
+            android:name=".main.Dashboard"
+            android:parentActivityName=".access.ConnectionActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+
+        <!-- User type (Driver or Passenger) activity -->
+        <activity
+            android:name=".user.UserTypeActivity"
+            android:parentActivityName=".access.ConnectionActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+        <activity
+            android:name=".user.ProfilActivity"
+            android:label="@string/lbl_profil"
+            android:parentActivityName=".main.Dashboard" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+        <activity
+            android:name=".misc.SearchActivity"
+            android:parentActivityName=".main.Dashboard" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+        <activity
+            android:name=".parcours.CreateParcoursActivity"
+            android:label="@string/lbl_route"
+            android:parentActivityName=".main.Dashboard" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+
+        <activity
+            android:name=".parcours.ParcoursActivity"
+            android:parentActivityName=".main.Dashboard" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+        <activity
+            android:name=".parcours.MapActivity"
+            android:parentActivityName=".parcours.ParcoursActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
         </activity>
     </application>
 

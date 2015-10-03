@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="testParcours">
+        <item>Albert Bitreyeson</item>
+        <item>Jean Paul II</item>
+        <item>Julie Falardeau </item>
+        <item>Harry Potter</item>
+        <item>Jean Michelle Lemieux</item>
+        <item>Philipe Langlois</item>
+        <item>Antoine Lepine</item>
+        <item>Alexandre</item>
+        <item>Anne-Marie Dufresne</item>
+    </string-array>
+
+</resources>

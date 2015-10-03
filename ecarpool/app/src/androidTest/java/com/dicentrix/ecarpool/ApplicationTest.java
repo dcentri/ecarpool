@@ -1,4 +1,4 @@
-package com.dicentrix.myapplication;
+package com.dicentrix.ecarpool;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
