@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.dicentrix.ecarpool.R;
 import com.dicentrix.ecarpool.misc.SearchActivity;
+import com.dicentrix.ecarpool.parcours.CreateParcours;
 import com.dicentrix.ecarpool.parcours.CreateParcoursActivity;
 import com.dicentrix.ecarpool.parcours.ParcoursActivity;
 import com.dicentrix.ecarpool.user.ProfilActivity;
@@ -64,6 +64,10 @@ public class Dashboard extends Activity {
     }
     public void create(View view){
         intent = new Intent(this, CreateParcoursActivity.class);
+        startActivity(intent);
+    }
+    public void startMap(){
+        intent = new Intent(this, CreateParcours.class);
         startActivity(intent);
     }
     public void list(View view){

@@ -21,6 +21,7 @@
             android:hint="@string/lbl_login"
             android:id="@+id/txtLogin"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -28,7 +29,8 @@
             android:paddingTop="2dp"
             android:layout_marginBottom="15dp"/>
 
-        <LinearLayout
+        <RadioGroup
+            android:id="@+id/Sex"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -36,6 +38,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="true"
                 android:text="@string/lbl_male"
                 android:layout_marginLeft="30dp"
                 android:id="@+id/rbMale" />
@@ -46,7 +49,7 @@
                 android:text="@string/lbl_female"
                 android:layout_marginLeft="30dp"
                 android:id="@+id/rbFemale" />
-        </LinearLayout>
+        </RadioGroup>
 
         <EditText
             android:layout_centerVertical="true"
@@ -55,6 +58,7 @@
             android:hint="@string/lbl_name"
             android:id="@+id/txtName"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -69,6 +73,7 @@
             android:hint="@string/lbl_firstName"
             android:id="@+id/txtFirstName"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -83,6 +88,7 @@
             android:hint="@string/lbl_telephone"
             android:id="@+id/txtTel"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -97,6 +103,7 @@
             android:hint="@string/lbl_email"
             android:id="@+id/txtEmail"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -112,6 +119,7 @@
             android:hint="@string/lbl_password"
             android:id="@+id/txtPassword"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="textPassword"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -127,6 +135,7 @@
             android:hint="@string/lbl_confirmPassword"
             android:id="@+id/txtConfirmPassword"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="textPassword"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -146,6 +155,7 @@
             android:hint="@string/lbl_civicNo"
             android:id="@+id/txtCivicNo"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="30dp"
             android:paddingBottom="5dp"
@@ -160,6 +170,7 @@
             android:id="@+id/txtAddress"
             android:layout_weight="11"
             android:background="@color/white"
+            android:textColor="@color/black"
             android:inputType="text"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="30dp"
@@ -180,6 +191,7 @@
                 android:hint="@string/lbl_app"
                 android:id="@+id/txtAppartNo"
                 android:background="@color/white"
+                android:textColor="@color/black"
                 android:inputType="text"
                 android:layout_marginLeft="30dp"
                 android:paddingBottom="5dp"
@@ -193,6 +205,7 @@
                 android:hint="@string/lbl_postalCode"
                 android:id="@+id/txtPostalCode"
                 android:background="@color/white"
+                android:textColor="@color/black"
                 android:inputType="text"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="30dp"

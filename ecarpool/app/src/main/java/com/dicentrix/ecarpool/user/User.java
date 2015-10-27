@@ -1,38 +1,46 @@
 package com.dicentrix.ecarpool.user;
 
+import com.dicentrix.ecarpool.util.Address;
+
 /**
  * Created by Akash on 9/26/2015.
  */
 public class User {
+    public enum UserType{
+        PASSENGER,
+        DRIVER;
+    }
+
     private int id;
-    private String userName;
+
+    private String login;
     private String firstName;
-    private char userType;
-    private char sex;
+    private String lastName;
+    private UserType type;
+    private char gender;
     private String email;
     private String phone;
-    private Adresse adresse;
+    private String password;
+    private Address address;
 
     public User() {
+
     }
 
-    public User(Adresse adresse, String email, String firstName, int id, String phone, char sex, String userName, char userType) {
-        this.adresse = adresse;
-        this.email = email;
-        this.firstName = firstName;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
-        this.phone = phone;
-        this.sex = sex;
-        this.userName = userName;
-        this.userType = userType;
     }
 
-    public Adresse getAdresse() {
-        return adresse;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setAdresse(Adresse adresse) {
-        this.adresse = adresse;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public String getEmail() {
@@ -51,12 +59,20 @@ public class User {
         this.firstName = firstName;
     }
 
-    public int getId() {
-        return id;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPhone() {
@@ -67,86 +83,27 @@ public class User {
         this.phone = phone;
     }
 
-    public char getSex() {
-        return sex;
+    public char getGender() {
+        return gender;
     }
 
-    public void setSex(char sex) {
-        this.sex = sex;
+    public void setGender(char gender) {
+        this.gender = gender;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public UserType getType() {
+        return type;
     }
 
-    public char getUserType() {
-        return userType;
+    public void setType(UserType type) {
+        this.type = type;
     }
 
-    public void setUserType(char userType) {
-        this.userType = userType;
-    }
-
-    public class Adresse{
-        private String civicNo;
-        private String route;
-        private String appart;
-        private String postalCode;
-        private String adresse;
-
-        public Adresse() {
-        }
-
-        public Adresse(String adresse, String appart, String civicNo, String postalCode, String route) {
-            this.adresse = adresse;
-            this.appart = appart;
-            this.civicNo = civicNo;
-            this.postalCode = postalCode;
-            this.route = route;
-        }
-
-        public String getAdresse() {
-            return adresse;
-        }
-
-        public void setAdresse(String adresse) {
-            this.adresse = adresse;
-        }
-
-        public String getAppart() {
-            return appart;
-        }
-
-        public void setAppart(String appart) {
-            this.appart = appart;
-        }
-
-        public String getCivicNo() {
-            return civicNo;
-        }
-
-        public void setCivicNo(String civicNo) {
-            this.civicNo = civicNo;
-        }
-
-        public String getPostalCode() {
-            return postalCode;
-        }
-
-        public void setPostalCode(String postalCode) {
-            this.postalCode = postalCode;
-        }
-
-        public String getRoute() {
-            return route;
-        }
-
-        public void setRoute(String route) {
-            this.route = route;
-        }
-    }
 }

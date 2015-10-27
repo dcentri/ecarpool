@@ -57,12 +57,21 @@
     <string name="lbl_create">Créer</string>
     <string name="lbl_add">Ajouter</string>
 
+    <!-- Error messages -->
+    <string name="err_cannotBeEmpty">Les champs ne peuvent pas être vide.</string>
+    <string name="err_passwordMismatch">Le mot de passe ne correspond pas</string>
+    <string name="err_invalidConnection">Connection invalide.</string>
+    <string name="err_signUpInvalidLogin">Le nom d\'utilisateur est déjà utilisé. Veuillez choisir une autre.</string>
+
     <string name="title_activity_dashboard">Dashboard</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_create_parcours">Nouveau Parcours</string>
+
 
 
 </resources>

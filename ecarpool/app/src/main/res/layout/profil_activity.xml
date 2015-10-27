@@ -37,21 +37,15 @@
             android:textColor="@color/white"
             android:text="Bitreyeson"/>
 
-        <CheckBox
-            android:id="@+id/chkMale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+
+        <TextView
+            android:id="@+id/lblGender"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:text="@string/lbl_male"
-            android:enabled="true"/>
-        <CheckBox
-            android:id="@+id/chkFemale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:textSize="20sp"
-            android:text="@string/lbl_female"/>
+            android:textColor="@color/white"
+            android:text="@string/lbl_male"/>
 
         <TextView
             android:layout_width="fill_parent"

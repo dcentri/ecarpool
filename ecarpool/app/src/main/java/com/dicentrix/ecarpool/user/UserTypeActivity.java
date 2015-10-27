@@ -6,32 +6,56 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.dicentrix.ecarpool.R;
+import com.dicentrix.ecarpool.access.ConnectionActivity;
+import com.dicentrix.ecarpool.access.SignUpActivity;
 import com.dicentrix.ecarpool.main.Dashboard;
 
 /**
  * Created by Akash on 9/26/2015.
  */
 public class UserTypeActivity extends Activity {
-    private char userType;
+    User user;
+    IUserDAO db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fate_activity);
+        int id = this.getIntent().getIntExtra(SignUpActivity.USER_ID, 0);
+        if (id == 0)
+            startConnection();
+        else
+        {
+            db = new UserDAO(this);
+            user = db.getById(id);
+        }
     }
 
     public void setPassenger(View v){
-        this.userType = 'P';
-        getConnection();
+        if(user != null)
+        {
+            user.setType(User.UserType.PASSENGER);
+            db.update(user);
+        }
+        startDash();
     }
 
     public void setDriver(View v){
-        this.userType = 'C';
-        getConnection();
-    }
-    private void getConnection(){
-        Intent i = new Intent(this, Dashboard.class);
+        if(user != null)
+        {
+            user.setType(User.UserType.DRIVER);
+            db.update(user);
+        }
 
+        startDash();
+    }
+    private void startDash(){
+        Intent i = new Intent(this, Dashboard.class);
         startActivity(i);
+    }
+    private void startConnection(){
+        Intent i = new Intent(this, ConnectionActivity.class);
+        startActivity(i);
+        finish();
     }
 
 }

@@ -29,7 +29,7 @@ public class ParcoursListFragment extends ListFragment {
 
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        Intent i = new Intent(getActivity(), MapActivity.class);
+        Intent i = new Intent(getActivity(), CreateParcours.class);
         this.startActivity(i);
 
     }
