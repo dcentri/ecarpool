@@ -54,10 +54,12 @@
 
         <Button
             android:layout_width="220dp"
+            android:background="@drawable/green_button"
             android:id="@+id/btnInscription"
             android:onClick="validateConnection"
             android:layout_height="36dp"
             android:text="@string/lbl_connection"
+            style="@style/button_text"
             android:textColor="@color/white"
             android:gravity="center"
             android:paddingBottom="5dp"

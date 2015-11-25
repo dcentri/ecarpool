@@ -11,8 +11,8 @@ import android.view.View;
 
 import com.dicentrix.ecarpool.R;
 import com.dicentrix.ecarpool.misc.SearchActivity;
-import com.dicentrix.ecarpool.parcours.CreateParcours;
 import com.dicentrix.ecarpool.parcours.CreateParcoursActivity;
+import com.dicentrix.ecarpool.parcours.MapsActivity;
 import com.dicentrix.ecarpool.parcours.ParcoursActivity;
 import com.dicentrix.ecarpool.user.ProfilActivity;
 
@@ -67,7 +67,7 @@ public class Dashboard extends Activity {
         startActivity(intent);
     }
     public void startMap(){
-        intent = new Intent(this, CreateParcours.class);
+        intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
     public void list(View view){

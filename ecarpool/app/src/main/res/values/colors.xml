@@ -1,6 +1,7 @@
 <resources>
 
     <color name="black_overlay">#66000000</color>
+    <color name="grey">#636163</color>
     <color name="blue_text">#33b5e5</color>
     <color name="blue_screen">#0099cc</color>
     <color name="driver_green">#40E868</color>

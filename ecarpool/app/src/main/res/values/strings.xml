@@ -35,8 +35,8 @@
     <!-- Control label-->
     <string name="lbl_login">Nom Utilisateur</string>
     <string name="lbl_password">Mot de passe</string>
-    <string name="lbl_confirmPassword">Confrmer le mot de passe</string>
-    <string name="lbl_telephone">Telephone</string>
+    <string name="lbl_confirmPassword">Confirmer le mot de passe</string>
+    <string name="lbl_telephone">Téléphone</string>
     <string name="lbl_name">Nom</string>
     <string name="lbl_firstName">Prénom</string>
     <string name="lbl_email">Courriel</string>
