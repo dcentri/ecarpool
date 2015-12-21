@@ -91,7 +91,16 @@
         </activity>
         <activity
             android:name=".misc.SearchActivity"
-            android:parentActivityName=".main.Dashboard" >
+            android:parentActivityName=".main.Dashboard"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable_adress"/>
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".misc.SearchActivity" />
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".access.ConnectionActivity" />
@@ -102,7 +111,15 @@
             android:parentActivityName=".main.Dashboard" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".access.ConnectionActivity" />
+                android:value=".main.Dashboard" />
+        </activity>
+        <activity
+            android:name=".parcours.CreateParcourForm2Activity"
+            android:label="@string/lbl_route"
+            android:parentActivityName=".parcours.CreateParcoursActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".parcours.CreateParcoursActivity" />
         </activity>
         <activity
             android:name=".parcours.ParcoursActivity"
@@ -111,7 +128,34 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".access.ConnectionActivity" />
         </activity>
-
+        <activity
+            android:name=".misc.ParcoursSearchActivity"
+            android:parentActivityName=".main.Dashboard" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".access.ConnectionActivity" />
+        </activity>
+        <activity
+            android:name=".misc.GetElementActivity"
+            android:parentActivityName=".parcours.DetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".parcours.DetailActivity" />
+        </activity>
+        <activity
+            android:name=".parcours.DetailActivity"
+            android:parentActivityName=".misc.ParcoursSearchActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.Dashboard" />
+        </activity>
+        <activity
+            android:name=".misc.HelpActivity"
+            android:parentActivityName=".main.Dashboard" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.Dashboard" />
+        </activity>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

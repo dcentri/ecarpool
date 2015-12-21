@@ -8,6 +8,9 @@ public class FrequenceTrajet {
     private String name;
 
     public FrequenceTrajet(){}
+    public FrequenceTrajet(String name){
+        this.name = name;
+    }
 
     public int getId() {
         return id;

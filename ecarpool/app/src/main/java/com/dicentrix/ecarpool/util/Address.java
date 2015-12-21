@@ -5,7 +5,7 @@ package com.dicentrix.ecarpool.util;
  */
 public class Address {
     private int id;
-
+    public String remoteId;
     private String civicNo;
     private String routeName;
     private String appart;
@@ -80,5 +80,9 @@ public class Address {
 
     public void setLongCoord(String longCoord) {
         this.longCoord = longCoord;
+    }
+    @Override
+    public String toString(){
+        return civicNo + " "+routeName +" " +postalCode ;
     }
 }

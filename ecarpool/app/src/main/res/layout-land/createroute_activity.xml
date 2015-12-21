@@ -4,52 +4,58 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:fillViewport="true"
-    android:background="@drawable/grad_selector" >
+    android:background="@drawable/grad_selector"
+    android:weightSum="12" >
+
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="15dp">
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp" >
 
         <Button
             android:layout_centerVertical="true"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:hint="@string/lbl_depart"
             android:textColorHint="@color/grey"
             android:id="@+id/btnDeparture"
+            android:layout_weight="2"
             android:background="@color/white"
             android:inputType="text"
             android:onClick="departure"
             android:textColor="@color/black"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:paddingBottom="1dp"
-            android:paddingTop="1dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:paddingBottom="5dp"
+            android:paddingTop="2dp"
             android:layout_marginBottom="15dp"/>
 
         <Button
             android:layout_centerVertical="true"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:hint="@string/lbl_arrival"
             android:textColorHint="@color/grey"
             android:id="@+id/btnArrival"
+            android:layout_weight="2"
             android:background="@color/white"
             android:onClick="arrival"
             android:inputType="text"
             android:textColor="@color/black"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:paddingBottom="1dp"
-            android:paddingTop="1dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:paddingBottom="5dp"
+            android:paddingTop="2dp"
             android:layout_marginBottom="15dp"/>
         <Button
-            android:layout_width="220dp"
+            android:layout_width="wrap_content"
             android:background="@drawable/green_button"
-            android:id="@+id/btnValidateAddress"
+            android:id="@+id/btnCreateRoute"
             android:onClick="validateDepartArrival"
             android:layout_height="36dp"
+            android:layout_weight="1"
             android:text="@string/lbl_validate"
             style="@style/button_text"
             android:gravity="center"
@@ -57,15 +63,17 @@
             android:paddingTop="5dp"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="15dp">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="15dp"
+            android:weightSum="11" >
         <fragment
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
     </LinearLayout>
+
 </LinearLayout >

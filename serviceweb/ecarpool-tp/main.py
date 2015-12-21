@@ -12,6 +12,8 @@ from datetime import datetime
 
 # Importation des modèles de données personnalisés.
 from models import User, Address, Trajet, Parcours, Messages
+from math import radians, cos, sin, asin, sqrt
+
 def update_parcour(object, id):
     if id is not None and id != "":
         cle = ndb.Key('Parcours', long(id))
@@ -158,7 +160,7 @@ class UserHandler(webapp2.RequestHandler):
              "password":"mp", 
              "firstName":"Albert",
              "lastName":"Bitreyeson", 
-            "userType":"Conducteur",
+            "userType":"Driver",
              "gender":"Homme", 
              "phone":"418-6884160", 
              "email":"albertb@gmail.com",
@@ -259,6 +261,65 @@ class AddressHandler(webapp2.RequestHandler):
             logging.error('%s', traceback.format_exc())
             self.error(500)
 
+class UserParcoursHandler(webapp2.RequestHandler):
+    def get(self, idUser):
+        try:
+            if(idUser is not None):
+                cle = ndb.Key('User', idUser)
+                dude = cle.get()
+                if(dude is None):
+                    self.error(400)
+                    return
+                liste_parcours = []
+                requete = Parcours.query()
+                requete = requete.filter(Parcours.driver == idUser)
+                for prc in requete:
+                    prc_dict = prc.to_dict()
+                    prc_dict['id'] = prc.key.id()
+                    liste_parcours.append(prc_dict)
+                json_data = json.dumps(liste_parcours, default=serialiser_pour_json)
+            else:
+                self.error(400)
+                return
+            self.response.out.write(json_data)
+        except (db.BadValueError, ValueError, KeyError):
+            logging.error('%s', traceback.format_exc())
+            self.error(400)
+
+        except Exception:
+            logging.error('%s', traceback.format_exc())
+            self.error(500)
+
+class UserTrajetsHandler(webapp2.RequestHandler):
+    def get(self, idUser):
+        try:
+            if(idUser is not None):
+                cle = ndb.Key('User', idUser)
+                dude = cle.get()
+                if(dude is None):
+                    self.error(400)
+                    return
+                liste_trajets = []
+                requete = Trajet.query()
+                requete = requete.filter(Trajet.idAuthor == idUser)
+                for trj in requete:
+                    trj_dict = trj.to_dict()
+                    trj_dict['id'] = trj.key.id()
+                    liste_trajets.append(trj_dict)
+                json_data = json.dumps(liste_trajets, default=serialiser_pour_json)
+            else:
+                self.error(400)
+                return
+            
+            self.response.out.write(json_data)
+        except (db.BadValueError, ValueError, KeyError):
+            logging.error('%s', traceback.format_exc())
+            self.error(400)
+
+        except Exception:
+            logging.error('%s', traceback.format_exc())
+            self.error(500)
+
 class ParcoursHandler(webapp2.RequestHandler):
     def post(self):
         """Permet d'ajouter un nouveau parcours à la liste des parcours disponibles
@@ -337,20 +398,38 @@ class ParcoursHandler(webapp2.RequestHandler):
         except Exception:
             logging.error('%s', traceback.format_exc())
             self.error(500)
-    def get(self, id):
-        cle = ndb.Key('Parcours', id)
-        parcour = cle.get()
-        if parcour is None:
-            self.error(404)
-            return
-        parcour_dict = parcour.to_dict()
-        parcour_dict['id'] = cle.id()
-        json_data = json.dumps(parcour_dict, default=serialiser_pour_json)
-        self.response.out.write(json_data)
+
+    def get(self, id=None):
+        try:
+            if(id is not None):
+                cle = ndb.Key('Parcours', long(id))
+                parcour = cle.get()
+                if parcour is None:
+                    self.error(404)
+                    return
+                parcour_dict = parcour.to_dict()
+                parcour_dict['id'] = cle.id()
+                json_data = json.dumps(parcour_dict, default=serialiser_pour_json)
+            else:
+                liste_parcours = []
+                requete = Parcours.query()
+                for prc in requete:
+                    prc_dict = prc.to_dict()
+                    prc_dict['id'] = prc.key.id()
+                    liste_parcours.append(prc_dict)
+                json_data = json.dumps(liste_parcours, default=serialiser_pour_json)
+            self.response.out.write(json_data)
+        except (db.BadValueError, ValueError, KeyError):
+            logging.error('%s', traceback.format_exc())
+            self.error(400)
+
+        except Exception:
+            logging.error('%s', traceback.format_exc())
+            self.error(500)
 
     def delete(self, id):
         try:
-            cle = ndb.Key('Parcours', id)
+            cle = ndb.Key('Parcours', long(id))
             parcour = cle.get()
 
             if parcour is None:
@@ -401,6 +480,32 @@ class TrajetParcoursHandler(webapp2.RequestHandler):
 
             response_json = json.dumps(msg_dict_out, default=serialiser_pour_json)
             self.response.out.write(response_json)
+        except (db.BadValueError, ValueError, KeyError):
+            logging.error('%s', traceback.format_exc())
+            self.error(400)
+
+        except Exception:
+            logging.error('%s', traceback.format_exc())
+            self.error(500)
+
+    def get(self, idtrajet):
+        try:
+            if(id is not None):
+                liste = []
+                requete = Parcours.query()
+                requete = requete.filter(Parcours.trajets == int(idtrajet))
+                parc = requete.get()
+                if(parc is not None):
+                    parc_dict = parc.to_dict()
+                    parc_dict['id'] = parc.key.id()
+                    liste.append(parc_dict)
+                json_data = json.dumps(liste, default=serialiser_pour_json)
+                self.response.headers['Content-Type'] = ('application/json;' +
+                                                         ' charset=utf-8')
+            else:
+                self.error(400)
+                return
+            self.response.out.write(json_data)
         except (db.BadValueError, ValueError, KeyError):
             logging.error('%s', traceback.format_exc())
             self.error(400)
@@ -563,18 +668,27 @@ class TrajetHandler(webapp2.RequestHandler):
         except Exception:
             logging.error('%s', traceback.format_exc())
             self.error(500)
-    def get(self, id):
+    def get(self, id=None):
         try:
-            cle = ndb.Key('Trajet', id)
-            trajet = cle.get()
-            if trajet is None:
-                self.error(404)
-                return
-            self.response.headers['Content-Type'] = ('application/json;' +
-                                                     ' charset=utf-8')
-            trajet_dict = trajet.to_dict()
-            user_dict['id'] = cle.id()
-            json_data = json.dumps(trajet_dict, default=serialiser_pour_json)
+            if( id is not None):
+                cle = ndb.Key('Trajet', long(id))
+                trajet = cle.get()
+                if trajet is None:
+                    self.error(404)
+                    return
+                self.response.headers['Content-Type'] = ('application/json;' +
+                                                         ' charset=utf-8')
+                trajet_dict = trajet.to_dict()
+                trajet_dict['id'] = cle.id()
+                json_data = json.dumps(trajet_dict, default=serialiser_pour_json)
+            else:
+                liste_trajets = []
+                requete = Trajet.query()
+                for trj in requete:
+                    trj_dict = trj.to_dict()
+                    trj_dict['id'] = trj.key.id()
+                    liste_trajets.append(trj_dict)
+                json_data = json.dumps(liste_trajets, default=serialiser_pour_json)
             self.response.out.write(json_data)
         except (db.BadValueError, ValueError, KeyError):
             logging.error('%s', traceback.format_exc())
@@ -605,7 +719,11 @@ app = webapp2.WSGIApplication(
      # créer une nouvelle utilisateur.
         webapp2.Route(r'/parcours',
                       handler=ParcoursHandler,
-                      methods=['POST']),
+                      methods=['POST','GET' ]),
+     # Trouver tous les parcours d'un utilisateur.
+        webapp2.Route(r'/user/<idUser>/parcours',
+                      handler=UserParcoursHandler,
+                      methods=['GET']),
         # créer une nouvelle utilisateur.
         webapp2.Route(r'/parcours/<id>',
                       handler=ParcoursHandler,
@@ -615,13 +733,21 @@ app = webapp2.WSGIApplication(
                       handler=TrajetParcoursHandler,
                       methods=['PUT']),
      # créer une nouvelle utilisateur.
+        webapp2.Route(r'/trajet/<idtrajet>/parcours',
+                      handler=TrajetParcoursHandler,
+                      methods=['GET']),
+     # créer une nouvelle utilisateur.
         webapp2.Route(r'/trajets',
                       handler=TrajetHandler,
-                      methods=['POST']),
+                      methods=['POST', 'GET']),
         # créer une nouvelle utilisateur.
         webapp2.Route(r'/trajets/<id>',
                       handler=TrajetHandler,
                       methods=['GET', 'DELETE']),
+     # Trouver tous les parcours d'un utilisateur.
+        webapp2.Route(r'/user/<idUser>/trajets',
+                      handler=UserTrajetsHandler,
+                      methods=['GET']),
         webapp2.Route(r'/message',
                       handler=MessageHandler,
                       methods=['POST']),

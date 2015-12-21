@@ -6,20 +6,26 @@
     <!-- Headings-->
     <string name="lbl_choose">Qui êtes-vous?</string>
     <string name="lbl_signUp">Inscription</string>
-    <string name="lbl_personalInfo">Informations personnel</string>
-    <string name="lbl_contact">Contact</string>
+    <string name="lbl_personalInfo">Informations personnel :</string>
+    <string name="lbl_contact">Contact :</string>
     <string name="lbl_notif">Notifications</string>
     <string name="lbl_histroy">Historique</string>
     <string name="lbl_route">Parcours</string>
+    <string name="lbl_my_route">Mes Parcours</string>
+    <string name="lbl_published_routes">Parcours publiés</string>
+    <string name="lbl_published_trajets">Trajets publiés</string>
+    <string name="lbl_my_trajet">Mes Trajets</string>
 
     <!-- Home page-->
     <string name="lbl_profil">Profil</string>
+    <string name="lbl_price">Prix</string>
     <string name="lbl_search">Recherche</string>
     <string name="lbl_trajet">Trajet</string>
     <string name="lbl_newTrajet">Nouveau Trajet</string>
     <string name="lbl_depart">Départ</string>
     <string name="lbl_arrival">À</string>
     <string name="lbl_newDepart">Nouveau Départ</string>
+    <string name="lbl_newParcours">Nouveau Parcours</string>
     <string name="lbl_driver">Conducteur</string>
     <string name="lbl_passenger">Passager</string>
 
@@ -30,6 +36,7 @@
     <string name="lbl_cancel">Annuler</string>
     <string name="lbl_noAcount">Je n\'ai pas de compte</string>
     <string name="lbl_validate">Valider</string>
+    <string name="lbl_publish">Publier</string>
     <string name="lbl_space">Espace</string>
 
     <!-- Control label-->
@@ -46,22 +53,47 @@
     <string name="lbl_app">Appartement</string>
     <string name="lbl_male">Homme</string>
     <string name="lbl_female">Femme</string>
+    <string name="lbl_addresse">Adresse :</string>
 
     <string name="lbl_coordinates">Coordonées</string>
     <string name="lbl_day">Jour</string>
     <string name="lbl_hour">Heure</string>
-    <string name="lbl_oneTime">Ponctuel</string>
-    <string name="lbl_recurring">Regulier</string>
+    <string name="lbl_oneTime">Une fois</string>
+    <string name="lbl_weekly">Chaque semaine</string>
     <string name="lbl_nbPlaces">Places disponibles</string>
     <string name="lbl_km">KM</string>
+    <string name="lbl_date">Date</string>
+    <string name="lbl_frequency">Fréquence</string>
     <string name="lbl_create">Créer</string>
     <string name="lbl_add">Ajouter</string>
+    <string name="lbl_findAdresse">Recherche par adresse</string>
+    <string name="lbl_invalideAddressDepartureArrival">Veuillez choisir une addresse.</string>
+    <string name="lbl_noItems">Aucune donées trouvés</string>
+    <string name="lbl_help">Aide</string>
+    <string name="help_intro">Ecarpool : </string>
+    <string name="help_intro_text">L\'application Ecarpool facilite la covoiturage dans le milieux urabaine pour facilement trouver et demander la covoiturage dans la ville. Les passagers qui n\'ont pas des véhicules et les
+    conducteurs peuvent s\'inscrire sure le site et retrouver rapidement des compatriotes pour un transport commun.</string>
+    <string name="help_parcours">Parcours :</string>
+    <string name="help_parcours_text">Vous avez un véhicule? Parfait! Inscrivez-vous en tant que conducteur et ajouté des parcours et publié les pour permettre à d\'autre de facilement retrouvé votre offre de covoiturage. Cliquez sur nouveau parcours pour créer un parcours
+    et le publier. Une fois publié d\'autre personne seront capable de consulté votre offre et vous envoyé des demandes de covoiturage.</string>
+    <string name="help_trajets">Trajets : </string>
+    <string name="help_trajets_text">Vous n\'avez pas de véhicule mais vous souhaitez retrouvé des parcours qui vous convient? Parfait! Inscrivez-vous en tant que passager et ajouté des trajets. Les utilisateurs ayant un véhicule seront
+    capable de consulté votre affiche et seront capable de vous offrir la covoiturage selon la concordance avec leur disponibilité. </string>
 
     <!-- Error messages -->
     <string name="err_cannotBeEmpty">Les champs ne peuvent pas être vide.</string>
     <string name="err_passwordMismatch">Le mot de passe ne correspond pas</string>
     <string name="err_invalidConnection">Connection invalide.</string>
-    <string name="err_signUpInvalidLogin">Le nom d\'utilisateur est déjà utilisé. Veuillez choisir une autre.</string>
+    <string name="err_signUpInvalidLogin">Le nom d\'utilisateur est déjà utilisé.</string>
+    <string name="err_com">Erreur de communication, réessayez</string>
+    <string name="err_server_inscription">Erreur lors de la création de votre profile.</string>
+    <string name="err_no_date_time">Veuillez choisir la date du parcours</string>
+    <string name="err_no_price">Veuillez indiquer le prix du parcours</string>
+    <string name="err_invalide_places">Le nombre de place doit être supérieur à 1</string>
+    <string name="err_parcours_creation_failure">Erreur de création de parcours</string>
+
+    <string name="succ_parcours_creation">Parcours publié avec succès</string>
+    <string name="succ_trajet_creation">Trajet publié avec succès</string>
 
     <string name="title_activity_dashboard">Dashboard</string>
 
@@ -71,6 +103,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_create_parcours">Nouveau Parcours</string>
+    <string name="address">Addresse</string>
+    <string name="enterAddress">Rechercher une adresse</string>
 
 
 

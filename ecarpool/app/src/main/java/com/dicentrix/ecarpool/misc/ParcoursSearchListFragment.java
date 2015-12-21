@@ -1,4 +1,4 @@
-package com.dicentrix.ecarpool.parcours;
+package com.dicentrix.ecarpool.misc;
 
 
 import android.app.ActionBar;
@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -21,6 +20,10 @@ import android.widget.Toast;
 
 import com.dicentrix.ecarpool.R;
 import com.dicentrix.ecarpool.access.ConnectionActivity;
+import com.dicentrix.ecarpool.parcours.DetailActivity;
+import com.dicentrix.ecarpool.parcours.MapsActivity;
+import com.dicentrix.ecarpool.parcours.Parcours;
+import com.dicentrix.ecarpool.parcours.Trajet;
 import com.dicentrix.ecarpool.user.IUserDAO;
 import com.dicentrix.ecarpool.user.User;
 import com.dicentrix.ecarpool.user.UserDAO;
@@ -48,7 +51,9 @@ import java.util.Map;
 /**
  * Created by Akash on 9/30/2015.
  */
-public class ParcoursListFragment extends ListFragment {
+public class ParcoursSearchListFragment extends ListFragment {
+    public static String ELEMENTYPE = "Element";
+    public static String ID = "ID";
     private final String TAG = this.getClass().getSimpleName();
     private HttpClient m_ClientHttp = new DefaultHttpClient();
     List<Parcours> parcs;
@@ -56,8 +61,8 @@ public class ParcoursListFragment extends ListFragment {
     IUserDAO db;
     IAddressDAO dbAdresse;
     User user;
-    private ActionBar actionBar;
     boolean isDriver;
+    private ActionBar actionBar;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -70,7 +75,7 @@ public class ParcoursListFragment extends ListFragment {
         isDriver = user.getType() == User.UserType.DRIVER;
         if(!isDriver){
             actionBar = activity.getActionBar();
-            actionBar.getTabAt(0).setText(R.string.lbl_my_trajet);
+            actionBar.getTabAt(0).setText(R.string.lbl_published_routes);
         }
     }
 
@@ -79,38 +84,36 @@ public class ParcoursListFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
 
         if(isDriver){
-            parcs = new ArrayList<Parcours>();
-            new GetParcoursTask().execute((Void)null);
-        }else
-        {
             trajs = new ArrayList<Trajet>();
             new GetTrajetsTask().execute((Void)null);
+        }else
+        {
+            parcs = new ArrayList<Parcours>();
+            new GetParcoursTask().execute((Void) null);
         }
 
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.parcourslist_fragement, container, false);
         ((TextView)rootView.findViewById(R.id.txtNoItems)).setVisibility(View.INVISIBLE);
         return rootView;
     }
 
     public void updateList(){
-        if(parcs != null  && parcs.size() > 0){
+        if(parcs != null && parcs.size() > 0) {
             ArrayList<Map<String, String>> list = ParcoursListe();
             String[] de = {"Heure", "Depart"};
-            int[] a = {android.R.id.text1 , android.R.id.text2};
-            SimpleAdapter adapter = new SimpleAdapter( getActivity(), list , android.R.layout.simple_list_item_2 , de, a );
+            int[] a = {android.R.id.text1, android.R.id.text2};
+            SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, android.R.layout.simple_list_item_2, de, a);
             setListAdapter(adapter);
-        }else if(trajs != null && trajs.size() > 0 ) {
+        }else if(trajs != null && trajs.size() > 0){
             ArrayList<Map<String, String>> list = TrajetsListe();
             String[] de = {"Heure", "Depart"};
             int[] a = {android.R.id.text1 , android.R.id.text2};
             SimpleAdapter adapter = new SimpleAdapter( getActivity(), list , android.R.layout.simple_list_item_2 , de, a );
             setListAdapter(adapter);
-        }
-        else {
+        }else {
             ((TextView)getView().findViewById(R.id.txtNoItems)).setVisibility(View.VISIBLE);
         }
     }
@@ -142,12 +145,19 @@ public class ParcoursListFragment extends ListFragment {
     }
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        /*Intent i = new Intent(getActivity(), MapsActivity.class);
+        /*Intent i = new Intent(getActivity(), DetailActivity.class);
+        if(isDriver){
+            i.putExtra(ELEMENTYPE, "TRAJET");
+            i.putExtra(ID, trajs.get(position).remoteId);
+        }else {
+            i.putExtra(ELEMENTYPE, "PARCOURS");
+            i.putExtra(ID, parcs.get(position).remoteId);
+        }
         this.startActivity(i);*/
 
     }
 
-    private class GetParcoursTask extends AsyncTask<Void, Void, Void> {
+    private class GetTrajetsTask extends AsyncTask<Void, Void, Void> {
         Exception m_Exp;
 
         // Méthode exécutée SYNChrone avant l'exécution de la tâche asynchrone.
@@ -163,13 +173,84 @@ public class ParcoursListFragment extends ListFragment {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 String login = prefs.getString(ConnectionActivity.LOGIN, "");
                 //Trouver tous les parcours
-                URI uri = new URI("https", WEB.URL, WEB.GET_USER_PARCOURS(login), null, null);
+                URI uri = new URI("https", WEB.URL, WEB.TRAJETS, null, null);
+                HttpGet requeteGet = new HttpGet(uri);
+                requeteGet.addHeader("Content-Type", "application/json");
+
+                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
+                trajs = JsonParser.deserialiseTrajetsList(new JSONArray(body));
+                trajs = cleanTrajets(trajs, login);
+                //Informations de parcours
+                for(Trajet t : trajs){
+                    t.setDepart(getAddresse(t.remoteDepartureAdresse));
+                    t.setDestination(getAddresse(t.remoteArrivalAdresse));
+                }
+                Log.i(TAG, "Get des parcours terminé avec succès");
+            } catch (Exception e) {
+                m_Exp = e;
+            }
+            return null;
+        }
+        private  List<Trajet> cleanTrajets(List<Trajet> trajets, String login){
+            List<Trajet> res = new ArrayList<Trajet>();
+            for(Trajet t : trajs){
+                if(t.idAuthor !=  login){
+                    res.add(t);
+                }
+            }
+            return res;
+        }
+        private Address getAddresse(String id){
+            try {
+
+                URI uri = new URI("https", WEB.URL, WEB.GET_ADRESSE(id), null, null);
+                HttpGet requeteGet = new HttpGet(uri);
+                requeteGet.addHeader("Content-Type", "application/json");
+
+                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
+                Address tempAdresse = JsonParser.deserialiseAddresse(new JSONObject(body));
+
+                return tempAdresse;
+            }catch (Exception e){
+                throw new IllegalArgumentException();
+            }
+        }
+        // Méthode exécutée SYNChrone après l'exécution de la tâche asynchrone.
+        // Elle reçoit en paramètre la valeur de retour de "doInBackground".
+        @Override
+        protected void onPostExecute(Void unused) {
+
+            if (m_Exp == null) {
+                // Rechargement de la liste des parcours
+                updateList();
+            } else {
+                Log.e(TAG, "Erreur lors de l'ajout ou de la modification de la personne (PUT)", m_Exp);
+                Toast.makeText(getActivity(), getString(R.string.err_invalidConnection), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class GetParcoursTask extends AsyncTask<Void, Void, Void> {
+        Exception m_Exp;
+
+        // Méthode exécutée SYNChrone avant l'exécution de la tâche asynchrone.
+        @Override
+        protected void onPreExecute() {
+        }
+
+        // Méthode exécutée ASYNChrone: la tâche en tant que telle.
+        @Override
+        protected Void doInBackground(Void... unused) {
+
+            try {
+                //Trouver tous les parcours
+                URI uri = new URI("https", WEB.URL, WEB.PARCOURS, null, null);
                 HttpGet requeteGet = new HttpGet(uri);
                 requeteGet.addHeader("Content-Type", "application/json");
 
                 String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
                 parcs = JsonParser.deserialiseParcoursList(new JSONArray(body));
-
+                parcs = cleanParcours(parcs);
                 //Informations de parcours
                 for(Parcours p : parcs){
                     for(String trajet : p.remoteTrajetsIds){
@@ -191,69 +272,14 @@ public class ParcoursListFragment extends ListFragment {
             return null;
         }
 
-        private Address getAddresse(String id){
-            try {
-
-                URI uri = new URI("https", WEB.URL, WEB.GET_ADRESSE(id), null, null);
-                HttpGet requeteGet = new HttpGet(uri);
-                requeteGet.addHeader("Content-Type", "application/json");
-
-                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                Address tempAdresse = JsonParser.deserialiseAddresse(new JSONObject(body));
-
-                return tempAdresse;
-            }catch (Exception e){
-                throw new IllegalArgumentException();
-            }
-        }
-        // Méthode exécutée SYNChrone après l'exécution de la tâche asynchrone.
-        // Elle reçoit en paramètre la valeur de retour de "doInBackground".
-        @Override
-        protected void onPostExecute(Void unused) {
-
-            if (m_Exp == null) {
-                // Rechargement de la liste des parcours
-                updateList();
-            } else {
-                Log.e(TAG, "Erreur lors de l'ajout ou de la modification de la personne (PUT)", m_Exp);
-                Toast.makeText(getActivity(), getString(R.string.err_invalidConnection), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private class GetTrajetsTask extends AsyncTask<Void, Void, Void> {
-        Exception m_Exp;
-
-        // Méthode exécutée SYNChrone avant l'exécution de la tâche asynchrone.
-        @Override
-        protected void onPreExecute() {
-        }
-
-        // Méthode exécutée ASYNChrone: la tâche en tant que telle.
-        @Override
-        protected Void doInBackground(Void... unused) {
-
-            try {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String login = prefs.getString(ConnectionActivity.LOGIN, "");
-                //Trouver tous les parcours
-                URI uri = new URI("https", WEB.URL, WEB.GET_USER_TRAJETS(login), null, null);
-                HttpGet requeteGet = new HttpGet(uri);
-                requeteGet.addHeader("Content-Type", "application/json");
-
-                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                trajs = JsonParser.deserialiseTrajetsList(new JSONArray(body));
-
-                //Informations de parcours
-                for(Trajet t : trajs){
-                    t.setDepart(getAddresse(t.remoteDepartureAdresse));
-                    t.setDestination(getAddresse(t.remoteArrivalAdresse));
+        private  List<Parcours> cleanParcours(List<Parcours> parcours){
+            List<Parcours> res = new ArrayList<Parcours>();
+            for(Parcours p : parcours){
+                if(p.remoteTrajetsIds.length < p.getNbPlaces()){
+                    res.add(p);
                 }
-                Log.i(TAG, "Get des parcours terminé avec succès");
-            } catch (Exception e) {
-                m_Exp = e;
             }
-            return null;
+            return res;
         }
 
         private Address getAddresse(String id){
@@ -285,5 +311,4 @@ public class ParcoursListFragment extends ListFragment {
             }
         }
     }
-
 }

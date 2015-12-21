@@ -10,13 +10,22 @@ import java.util.ArrayList;
 public class Parcours {
 
     private int id;
+    public String remoteId;
+    public String driverId;
     private int nbPlaces;
     private float price;
     private float km;
     private Trajet defaultTrajet;
     private ArrayList<Trajet> trajets;
+    public String[] remoteTrajetsIds;
 
     public Parcours(){}
+    public Parcours(int nbPlaces, float price, float km, Trajet defaultTrajet){
+        this.nbPlaces = nbPlaces;
+        this.price = price;
+        this.km = km;
+        this.defaultTrajet = defaultTrajet;
+    }
 
     public Trajet getDefaultTrajet() {
         return defaultTrajet;
@@ -64,5 +73,16 @@ public class Parcours {
 
     public void setTrajets(ArrayList<Trajet> trajets) {
         this.trajets = trajets;
+    }
+
+    public void addTrajet(Trajet trajet) {
+        if(trajet.idAuthor.equals(driverId)){
+            this.defaultTrajet = trajet;
+        }else{
+            if(this.trajets == null)
+                this.trajets = new ArrayList<Trajet>();
+            this.trajets.add(trajet);
+        }
+
     }
 }

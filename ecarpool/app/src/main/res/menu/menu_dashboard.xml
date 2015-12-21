@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.dicentrix.ecarpool.main.Dashboard">
 
-    <item android:id="@+id/fate" android:title="@string/lbl_space"
+    <item android:id="@+id/fate" android:title="@string/lbl_help"
         android:orderInCategory="100" />
-
 </menu>

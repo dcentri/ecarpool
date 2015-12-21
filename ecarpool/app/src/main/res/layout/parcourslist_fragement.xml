@@ -10,13 +10,13 @@
         android:layout_marginBottom="10dp"
         android:textSize="18dp"
         android:onClick="signUp"
+        android:id="@+id/txtNoItems"
         android:clickable="true"
         android:textColor="@color/white"
         android:gravity="center"
-        android:text="@string/lbl_noAcount" />
+        android:text="@string/lbl_noItems" />
     <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@android:id/list"></ListView>
 </LinearLayout>

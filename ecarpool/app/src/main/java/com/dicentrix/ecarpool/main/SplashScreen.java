@@ -17,7 +17,6 @@ public class SplashScreen extends Activity {
         setContentView(R.layout.splash_screen);
 
         new Handler().postDelayed(new Runnable() {
-
             @Override
             public void run() {
                 // This method will be executed once the timer is over

@@ -3,6 +3,7 @@ package com.dicentrix.ecarpool.access;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,7 +17,20 @@ import com.dicentrix.ecarpool.user.IUserDAO;
 import com.dicentrix.ecarpool.user.User;
 import com.dicentrix.ecarpool.user.UserDAO;
 import com.dicentrix.ecarpool.user.UserTypeActivity;
+import com.dicentrix.ecarpool.util.Address;
+import com.dicentrix.ecarpool.util.JsonParser;
+import com.dicentrix.ecarpool.util.WEB;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONObject;
+
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +43,11 @@ public class ConnectionActivity extends Activity {
     public final static String USER_ID = "userId";
     public final static String LOGIN = "userLogin";
     public final static String PSWD = "pswd";
+    private final String TAG = this.getClass().getSimpleName();
+    private HttpClient m_ClientHttp = new DefaultHttpClient();
+    public User m_usr;
+    public Connection m_con ;
+
 
 
     @Override
@@ -47,13 +66,19 @@ public class ConnectionActivity extends Activity {
         con.setLogin(((EditText) this.findViewById(R.id.txtLogin)).getText().toString());
         con.setPassword(((EditText) this.findViewById(R.id.txtPassword)).getText().toString());
 
-        if (validateConnection(con))
+        if (!(con.getLogin().equals("") || con.getPassword().equals("")))
         {
-            setCredentials(PreferenceManager.getDefaultSharedPreferences(ConnectionActivity.this).edit(), con, db.getByLogin(con.getLogin()).getId());
-            startDash();
+            m_con = con;
+            new CreateConnectionTask().execute((Void) null );
         }
         else
             Toast.makeText(this,R.string.err_invalidConnection, Toast.LENGTH_LONG).show();
+    }
+
+    //Valide la connexion au serveur
+    public void validateServerConnection(Connection con){
+        setCredentials(PreferenceManager.getDefaultSharedPreferences(ConnectionActivity.this).edit(), con, db.getByLogin(con.getLogin()).getId());
+        startDash();
     }
 
     /**
@@ -61,7 +86,7 @@ public class ConnectionActivity extends Activity {
      * @param con : Objet de connexion
      * @return Vrai si la connexion est valide et faux dans le cas contraire.
      */
-    public boolean validateConnection(Connection con){
+    public boolean validatedbConnection(Connection con){
         if(con.getLogin().equals("") || con.getPassword().equals(""))
             return false;
         else{
@@ -92,9 +117,77 @@ public class ConnectionActivity extends Activity {
         finish();
     }
 
-    public void startUserType(){
-        Intent i = new Intent(this, UserTypeActivity.class);
-        startActivity(i);
-        finish();
+    private class CreateConnectionTask extends AsyncTask<Void, Void, Void> {
+        Exception m_Exp;
+
+        // Méthode exécutée SYNChrone avant l'exécution de la tâche asynchrone.
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        // Méthode exécutée ASYNChrone: la tâche en tant que telle.
+        @Override
+        protected Void doInBackground(Void... unused) {
+
+            try {
+                URI uri = new URI("https", WEB.URL, WEB.CON, null, null);
+                HttpPost requetePost = new HttpPost(uri);
+
+                //String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
+                //Log.i(TAG, "Reçu (PUT) : " + body);
+
+                JSONObject obj = JsonParser.serialiseCon(m_con);
+                requetePost.setEntity(new StringEntity(obj.toString(), HTTP.UTF_8));
+                requetePost.addHeader("Content-Type", "application/json");
+
+                String body = m_ClientHttp.execute(requetePost, new BasicResponseHandler());
+                m_usr= JsonParser.deseriliserUser(new JSONObject(body));
+                User tempUser = db.getByLogin(m_usr.getLogin());
+                if(tempUser != null){
+                    m_usr = tempUser;
+                }else{
+                    m_usr.setAddress(getAddresse(m_usr.remoteAddress));
+                    m_usr.setId(db.create(m_usr));
+                }
+                Log.i(TAG, "Put terminé avec succès");
+            } catch (Exception e) {
+                m_Exp = e;
+            }
+            return null;
+        }
+        private Address getAddresse(String id){
+            try {
+
+                URI uri = new URI("https", WEB.URL, WEB.GET_ADRESSE(id), null, null);
+                HttpGet requeteGet = new HttpGet(uri);
+                requeteGet.addHeader("Content-Type", "application/json");
+
+                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
+                Address tempAdresse = JsonParser.deserialiseAddresse(new JSONObject(body));
+
+                return tempAdresse;
+            }catch (Exception e){
+                throw new IllegalArgumentException();
+            }
+        }
+        // Méthode exécutée SYNChrone après l'exécution de la tâche asynchrone.
+        // Elle reçoit en paramètre la valeur de retour de "doInBackground".
+        @Override
+        protected void onPostExecute(Void unused) {
+            setProgressBarIndeterminateVisibility(false);
+
+            if (m_Exp == null) {
+                // Rechargement de la liste des personnes.
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ConnectionActivity.this).edit();
+                setCredentials(editor, m_con, m_usr.getId());
+
+                Intent intent = new Intent(ConnectionActivity.this, Dashboard.class);
+                ConnectionActivity.this.startActivity(intent);
+            } else {
+                Log.e(TAG, "Erreur lors de l'ajout ou de la modification de la personne (PUT)", m_Exp);
+                Toast.makeText(ConnectionActivity.this, getString(R.string.err_invalidConnection), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

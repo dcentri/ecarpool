@@ -22,6 +22,9 @@ public class User {
     private String phone;
     private String password;
     private Address address;
+    public String remoteAddress;
+    public String[] remoteDemandeParcours;
+    public String[] reomoteDemandeTrajet;
 
     public User() {
 

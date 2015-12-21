@@ -13,14 +13,24 @@ public class Trajet {
 
 
     private int id;
+    public String remoteId;
     private User author;
+    public String idAuthor;
     private Address depart;
+    public String remoteDepartureAdresse;
     private Address destination;
+    public String remoteArrivalAdresse;
     private Date departDateTime;
     private Date arrivalDateTime;
     private FrequenceTrajet frequence;
 
-    public  Trajet(){
+    public  Trajet(){}
+    public  Trajet(User author, Address depart, Address destination, Date departDateTime, FrequenceTrajet frequence ){
+        this.author = author;
+        this.depart = depart;
+        this.destination = destination;
+        this.departDateTime = departDateTime;
+        this.frequence = frequence;
     }
 
     public int getId() {

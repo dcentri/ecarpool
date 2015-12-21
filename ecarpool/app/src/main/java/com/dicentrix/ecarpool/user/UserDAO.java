@@ -104,9 +104,14 @@ public class UserDAO extends DAO implements IUserDAO {
         row.put(FIRST_NAME, user.getFirstName());
         row.put(TEL, user.getPhone());
         row.put(EMAIL, user.getEmail());
+        row.put(ACTIVE_SPACE, user.getType().toString());
         row.put(PASSWORD, user.getPassword());
         row.put(GENDER, String.valueOf(user.getGender()));
-        row.put(ADDRESS, user.getAddress().getId());
+        if(user.getAddress().getId() == 0)
+            row.put(ADDRESS, dbAddress.create(user.getAddress()));
+        else
+            row.put(ADDRESS, user.getAddress().getId());
+
         return row;
     }
 
