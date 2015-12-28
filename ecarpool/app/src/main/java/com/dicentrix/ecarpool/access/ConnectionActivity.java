@@ -72,7 +72,7 @@ public class ConnectionActivity extends Activity {
             new CreateConnectionTask().execute((Void) null );
         }
         else
-            Toast.makeText(this,R.string.err_invalidConnection, Toast.LENGTH_LONG).show();
+            Toast.makeText(this,R.string.err_invalidCredentials, Toast.LENGTH_LONG).show();
     }
 
     //Valide la connexion au serveur
@@ -131,23 +131,12 @@ public class ConnectionActivity extends Activity {
         protected Void doInBackground(Void... unused) {
 
             try {
-                URI uri = new URI("https", WEB.URL, WEB.CON, null, null);
-                HttpPost requetePost = new HttpPost(uri);
-
-                //String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                //Log.i(TAG, "Reçu (PUT) : " + body);
-
-                JSONObject obj = JsonParser.serialiseCon(m_con);
-                requetePost.setEntity(new StringEntity(obj.toString(), HTTP.UTF_8));
-                requetePost.addHeader("Content-Type", "application/json");
-
-                String body = m_ClientHttp.execute(requetePost, new BasicResponseHandler());
-                m_usr= JsonParser.deseriliserUser(new JSONObject(body));
+                m_usr = WEB.signIn(m_con);
                 User tempUser = db.getByLogin(m_usr.getLogin());
                 if(tempUser != null){
                     m_usr = tempUser;
                 }else{
-                    m_usr.setAddress(getAddresse(m_usr.remoteAddress));
+                    m_usr.setAddress(WEB.getAddresse(m_usr.remoteAddress));
                     m_usr.setId(db.create(m_usr));
                 }
                 Log.i(TAG, "Put terminé avec succès");
@@ -156,21 +145,7 @@ public class ConnectionActivity extends Activity {
             }
             return null;
         }
-        private Address getAddresse(String id){
-            try {
 
-                URI uri = new URI("https", WEB.URL, WEB.GET_ADRESSE(id), null, null);
-                HttpGet requeteGet = new HttpGet(uri);
-                requeteGet.addHeader("Content-Type", "application/json");
-
-                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                Address tempAdresse = JsonParser.deserialiseAddresse(new JSONObject(body));
-
-                return tempAdresse;
-            }catch (Exception e){
-                throw new IllegalArgumentException();
-            }
-        }
         // Méthode exécutée SYNChrone après l'exécution de la tâche asynchrone.
         // Elle reçoit en paramètre la valeur de retour de "doInBackground".
         @Override
@@ -186,7 +161,7 @@ public class ConnectionActivity extends Activity {
                 ConnectionActivity.this.startActivity(intent);
             } else {
                 Log.e(TAG, "Erreur lors de l'ajout ou de la modification de la personne (PUT)", m_Exp);
-                Toast.makeText(ConnectionActivity.this, getString(R.string.err_invalidConnection), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ConnectionActivity.this, getString(R.string.err_invalidCredentials), Toast.LENGTH_SHORT).show();
             }
         }
     }

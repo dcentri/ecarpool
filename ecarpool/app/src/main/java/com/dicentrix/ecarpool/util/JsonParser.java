@@ -20,7 +20,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Akash on 12/17/2015.
@@ -64,9 +66,9 @@ public class JsonParser {
             for (int i = 0; i < array.length(); i++)
                 usr.remoteDemandeParcours[i] = array.getString(i);
             array = jUsr.getJSONArray("listeDemandesTrajet");
-            usr.reomoteDemandeTrajet = new String[array.length()];
+            usr.remoteDemandeTrajet = new String[array.length()];
             for (int i = 0; i < array.length(); i++)
-                usr.reomoteDemandeTrajet[i] = array.getString(i);
+                usr.remoteDemandeTrajet[i] = array.getString(i);
             return usr;
         }
         catch (JSONException e){
@@ -107,7 +109,7 @@ public class JsonParser {
         try{
             List<Trajet> resList = new ArrayList<Trajet>();
             for (int i = 0; i < listTrajs.length(); i++) {
-                resList.add(deserialiseTrajet((JSONObject)listTrajs.get(i)));
+                resList.add(deserialiseTrajet((JSONObject) listTrajs.get(i)));
             }
             return resList;
         }catch (Exception e){
@@ -121,6 +123,7 @@ public class JsonParser {
             p.setNbPlaces(parc.getInt("nbPlaces"));
             p.remoteId = parc.getString("id");
             p.driverId = parc.getString("driver");
+            p.setPrice((float) parc.getDouble("price"));
             p.setKm((float) parc.getDouble("km"));
             JSONArray trajets = parc.getJSONArray("trajets");
             String[] trajetsTemps = new String[trajets.length()];
@@ -135,6 +138,7 @@ public class JsonParser {
             return null;
         }
     }
+
     public static JSONObject serialiseTrajet(Trajet traj){
         try{
             JSONObject jPar = new JSONObject();
@@ -144,6 +148,7 @@ public class JsonParser {
             jPar.put("departureDateTime", format.format(traj.getDepartDateTime()));
             jPar.put("arrivalDateTime", format.format(traj.getDepartDateTime()));
             jPar.put("frequency", traj.getFrequence().getName());
+            jPar.put("booked", traj.booked);
             jPar.put("departureAddress", serialiseAddresse(traj.getDepart()));
             jPar.put("arrivalAddress", serialiseAddresse(traj.getDestination()));
             return jPar;
@@ -153,7 +158,20 @@ public class JsonParser {
             return null;
         }
     }
-
+    public static Map<String,String> deserialiseStatus(JSONObject jTraj){
+        try{
+            Map<String, String> res = new HashMap<String, String>();
+            if(jTraj.has("succes"))
+                res.put("succes", jTraj.getString("succes"));
+            if(jTraj.has("erreur"))
+                res.put("erreur", jTraj.getString("erreur"));
+            return res;
+        }
+        catch (JSONException e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
     public static Trajet deserialiseTrajet(JSONObject jTraj){
         try{
             Trajet traj = new Trajet();
@@ -163,6 +181,7 @@ public class JsonParser {
             traj.setArrivalDateTime(dateTryParse(jTraj.getString("arrivalDateTime")));
             traj.setFrequence(new FrequenceTrajet(jTraj.getString("frequency")));
             traj.remoteDepartureAdresse = jTraj.getString("departureAddress");
+            traj.booked = jTraj.getBoolean("booked");
             traj.remoteArrivalAdresse = jTraj.getString("arrivalAddress");
             return traj;
         }
@@ -290,4 +309,47 @@ public class JsonParser {
         }
     }
 
+    public static JSONObject serialiseMessage(Message msg)
+    {
+        try{
+            JSONObject jMsg = new JSONObject();
+            jMsg.put("id", msg.remoteId == null ? "" : msg.remoteId);
+            jMsg.put("message", msg.msg);
+            jMsg.put("to", msg.receiver);
+            jMsg.put("sender", msg.sender);
+            jMsg.put("refTrajet", msg.refTrajet);
+            jMsg.put("refParcour", msg.refParcours);
+            return  jMsg;
+        }
+        catch (JSONException ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
+    public static Message deserialiseMessage(JSONObject message){
+        Message res = new Message();
+        try {
+            res.remoteId = message.getString("id");
+            res.refParcours = message.getString("refParcour");
+            res.refTrajet = message.getString("refTrajet");
+            res.sender = message.getString("sender");
+            res.receiver = message.getString("to");
+            res.msg = message.getString("message");
+            return res;
+        }catch (Exception e){
+            return  res;
+        }
+    }
+
+    public static ArrayList<Message> deserialiseMessage(JSONArray messages){
+        ArrayList<Message> allMsgs = new ArrayList<>();
+        try{
+            for(int i = 0; i < messages.length(); i++){
+                allMsgs.add(deserialiseMessage((JSONObject) messages.get(i)));
+            }
+            return allMsgs;
+        }catch(Exception e){
+            return  allMsgs;
+        }
+    }
 }

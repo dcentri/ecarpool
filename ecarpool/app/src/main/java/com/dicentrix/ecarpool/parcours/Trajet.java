@@ -20,6 +20,7 @@ public class Trajet {
     public String remoteDepartureAdresse;
     private Address destination;
     public String remoteArrivalAdresse;
+    public boolean booked;
     private Date departDateTime;
     private Date arrivalDateTime;
     private FrequenceTrajet frequence;

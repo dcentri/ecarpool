@@ -150,6 +150,27 @@
                 android:value=".main.Dashboard" />
         </activity>
         <activity
+            android:name=".parcours.DetailTrajetActivity"
+            android:parentActivityName=".parcours.ParcoursActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".parcours.ParcoursActivity" />
+        </activity>
+        <activity
+            android:name=".parcours.DetailParcoursActivity"
+            android:parentActivityName=".parcours.ParcoursActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".parcours.ParcoursActivity" />
+        </activity>
+        <activity
+            android:name=".parcours.DetailMessageActivity"
+            android:parentActivityName=".parcours.ParcoursActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".parcours.ParcoursActivity" />
+        </activity>
+        <activity
             android:name=".misc.HelpActivity"
             android:parentActivityName=".main.Dashboard" >
             <meta-data
@@ -172,11 +193,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <uses-library android:name="com.google.android.maps" />
-        <activity
-            android:name=".parcours.MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:parentActivityName=".parcours.ParcoursActivity">
-        </activity>
     </application>
 
 </manifest>

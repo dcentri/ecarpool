@@ -24,7 +24,7 @@ public class User {
     private Address address;
     public String remoteAddress;
     public String[] remoteDemandeParcours;
-    public String[] reomoteDemandeTrajet;
+    public String[] remoteDemandeTrajet;
 
     public User() {
 
@@ -107,6 +107,11 @@ public class User {
 
     public void setType(UserType type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString(){
+        return firstName + ", " + lastName;
     }
 
 }

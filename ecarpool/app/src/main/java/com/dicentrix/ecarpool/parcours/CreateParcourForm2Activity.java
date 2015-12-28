@@ -81,7 +81,7 @@ public class CreateParcourForm2Activity extends FragmentActivity implements Time
             departureAddre = JsonParser.deserialiseGoogleAddresse(new JSONObject(this.getIntent().getStringExtra(CreateParcoursActivity.DEP_PLACE)));
             ((TextView) this.findViewById(R.id.txtDeparture)).setText(departureAddre.toString());
             ((TextView) this.findViewById(R.id.txtArrival)).setText(arrivalAddre.toString());
-            km = getDistance(departureAddre, arrivalAddre);
+            km = departureAddre.getDistanceTo(arrivalAddre);
             DecimalFormat df = new DecimalFormat("#.####");
             df.setRoundingMode(RoundingMode.CEILING);
             ((TextView) this.findViewById(R.id.txtKM)).setText(df.format(km));
@@ -93,24 +93,8 @@ public class CreateParcourForm2Activity extends FragmentActivity implements Time
             }
         }catch (Exception e){}
     }
-    private float getDistance(Address departure, Address arrival){
-        LatLng departLatLng = new LatLng(Double.parseDouble(departure.getLatCoord()), Double.parseDouble(departure.getLongCoord()));
-        LatLng arrivalLatLng = new LatLng(Double.parseDouble(arrival.getLatCoord()), Double.parseDouble(arrival.getLongCoord()));
-        return distFrom((float)departLatLng.latitude,(float) departLatLng.longitude, (float)arrivalLatLng.latitude,(float)arrivalLatLng.longitude);
-    }
 
-    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
-        double earthRadius = 6371; //en KM
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lng2-lng1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        float dist = (float) (earthRadius * c);
 
-        return dist;
-    }
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
@@ -152,6 +136,7 @@ public class CreateParcourForm2Activity extends FragmentActivity implements Time
             if(arrivalAddre != null && departureAddre != null && user != null){
                 Trajet trj = new Trajet(user,departureAddre, arrivalAddre, departureDate.getTime(), new FrequenceTrajet(frequecy));
                 if(isDriver){
+                    trj.booked = true;
                     p = new Parcours(places, price, km, trj);
                     new CreateParcoursTask().execute((Void) null);
                 }else {
@@ -248,6 +233,7 @@ public class CreateParcourForm2Activity extends FragmentActivity implements Time
                 //Log.i(TAG, "Reçu (PUT) : " + body);
 
                 JSONObject obj = JsonParser.serialiseTrajet(t);
+                t.booked = false;
                 requetePost.setEntity(new StringEntity(obj.toString(),HTTP.UTF_8));
                 requetePost.addHeader("Content-Type", "application/json");
 
@@ -268,7 +254,7 @@ public class CreateParcourForm2Activity extends FragmentActivity implements Time
 
             if (m_Exp == null) {
                 Toast.makeText(CreateParcourForm2Activity.this, getString(R.string.succ_trajet_creation), Toast.LENGTH_LONG).show();
-                // Rechargement de la liste des personnes.
+                // Redirection
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

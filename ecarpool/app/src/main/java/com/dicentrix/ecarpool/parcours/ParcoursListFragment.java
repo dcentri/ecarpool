@@ -26,6 +26,7 @@ import com.dicentrix.ecarpool.user.User;
 import com.dicentrix.ecarpool.user.UserDAO;
 import com.dicentrix.ecarpool.util.Address;
 import com.dicentrix.ecarpool.util.AddressDAO;
+import com.dicentrix.ecarpool.util.FragmentHelper;
 import com.dicentrix.ecarpool.util.IAddressDAO;
 import com.dicentrix.ecarpool.util.JsonParser;
 import com.dicentrix.ecarpool.util.WEB;
@@ -50,6 +51,9 @@ import java.util.Map;
  */
 public class ParcoursListFragment extends ListFragment {
     private final String TAG = this.getClass().getSimpleName();
+    public static String PARCOURS_DETAIL = "idParcours";
+    public static String TRAJET_DETAIL = "idTrajet";
+    public static String LOGIN = "userLogin";
     private HttpClient m_ClientHttp = new DefaultHttpClient();
     List<Parcours> parcs;
     List<Trajet> trajs;
@@ -61,57 +65,54 @@ public class ParcoursListFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        db = new UserDAO(activity);
-        db = new UserDAO(activity);
-        dbAdresse =new AddressDAO(activity);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        int userId = prefs.getInt(ConnectionActivity.USER_ID, 0);
-        user = db.getById(userId);
-        isDriver = user.getType() == User.UserType.DRIVER;
-        if(!isDriver){
-            actionBar = activity.getActionBar();
-            actionBar.getTabAt(0).setText(R.string.lbl_my_trajet);
-        }
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(isDriver){
-            parcs = new ArrayList<Parcours>();
-            new GetParcoursTask().execute((Void)null);
-        }else
-        {
-            trajs = new ArrayList<Trajet>();
-            new GetTrajetsTask().execute((Void)null);
-        }
-
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        if(user == null){
+            db = new UserDAO(getActivity());
+            dbAdresse =new AddressDAO(getActivity());
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            int userId = prefs.getInt(ConnectionActivity.USER_ID, 0);
+            user = db.getById(userId);
+        }
+        isDriver = user.getType() == User.UserType.DRIVER;
+        if(!isDriver){
+            actionBar = getActivity().getActionBar();
+            actionBar.getTabAt(0).setText(R.string.lbl_my_trajet);
+        }
+        if(trajs != null || parcs != null){
+            updateList();
+        }else
+        {
+            if(isDriver){
+                parcs = new ArrayList<>();
+                new GetParcoursTask().execute((Void)null);
+            }else
+            {
+                trajs = new ArrayList<>();
+                new GetTrajetsTask().execute((Void)null);
+            }
+        }
         View rootView = inflater.inflate(R.layout.parcourslist_fragement, container, false);
-        ((TextView)rootView.findViewById(R.id.txtNoItems)).setVisibility(View.INVISIBLE);
+        (rootView.findViewById(R.id.txtNoItems)).setVisibility(View.GONE);
         return rootView;
     }
 
     public void updateList(){
         if(parcs != null  && parcs.size() > 0){
-            ArrayList<Map<String, String>> list = ParcoursListe();
-            String[] de = {"Heure", "Depart"};
-            int[] a = {android.R.id.text1 , android.R.id.text2};
-            SimpleAdapter adapter = new SimpleAdapter( getActivity(), list , android.R.layout.simple_list_item_2 , de, a );
-            setListAdapter(adapter);
+            setListAdapter(FragmentHelper.getListAdapter(FragmentHelper.ParcoursListe(parcs), getActivity()));
         }else if(trajs != null && trajs.size() > 0 ) {
-            ArrayList<Map<String, String>> list = TrajetsListe();
-            String[] de = {"Heure", "Depart"};
-            int[] a = {android.R.id.text1 , android.R.id.text2};
-            SimpleAdapter adapter = new SimpleAdapter( getActivity(), list , android.R.layout.simple_list_item_2 , de, a );
-            setListAdapter(adapter);
+            setListAdapter(FragmentHelper.getListAdapter(FragmentHelper.TrajetsListe(trajs), getActivity()));
         }
         else {
-            ((TextView)getView().findViewById(R.id.txtNoItems)).setVisibility(View.VISIBLE);
+            (getView().findViewById(R.id.txtNoItems)).setVisibility(View.GONE);
         }
     }
     public ArrayList<Map<String, String>> TrajetsListe()
@@ -125,25 +126,23 @@ public class ParcoursListFragment extends ListFragment {
         }
         return res;
     }
-
-    public ArrayList<Map<String, String>> ParcoursListe()
-    {
-        ArrayList<Map<String, String>> res = new ArrayList<Map<String, String>>();
-        for (Parcours p : parcs) {
-            HashMap<String, String> item = new HashMap<String, String>();
-            item.put("Heure", getDate(p.getDefaultTrajet().getDepartDateTime()));
-            item.put("Depart", "Départ : " + p.getDefaultTrajet().getDepart().toString());
-            res.add(item);
-        }
-        return res;
-    }
     private String getDate(Date date){
         return new SimpleDateFormat("kk:mm EEE, MMM d, ''yy").format(date);
     }
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        /*Intent i = new Intent(getActivity(), MapsActivity.class);
-        this.startActivity(i);*/
+        if(user.getType() == User.UserType.DRIVER){
+            Intent i = new Intent(getActivity(), DetailParcoursActivity.class);
+            i.putExtra(PARCOURS_DETAIL, parcs.get(position).remoteId);
+            i.putExtra(LOGIN, user.getLogin());
+            this.startActivity(i);
+        }else{
+            Intent i = new Intent(getActivity(), DetailTrajetActivity.class);
+            i.putExtra(TRAJET_DETAIL,trajs.get(position).remoteId);
+            i.putExtra(LOGIN, user.getLogin());
+            this.startActivity(i);
+        }
+
 
     }
 
@@ -160,51 +159,13 @@ public class ParcoursListFragment extends ListFragment {
         protected Void doInBackground(Void... unused) {
 
             try {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String login = prefs.getString(ConnectionActivity.LOGIN, "");
-                //Trouver tous les parcours
-                URI uri = new URI("https", WEB.URL, WEB.GET_USER_PARCOURS(login), null, null);
-                HttpGet requeteGet = new HttpGet(uri);
-                requeteGet.addHeader("Content-Type", "application/json");
-
-                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                parcs = JsonParser.deserialiseParcoursList(new JSONArray(body));
-
-                //Informations de parcours
-                for(Parcours p : parcs){
-                    for(String trajet : p.remoteTrajetsIds){
-                        uri = new URI("https", WEB.URL, WEB.GET_TRAJET(trajet), null, null);
-                        requeteGet = new HttpGet(uri);
-                        requeteGet.addHeader("Content-Type", "application/json");
-
-                        body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                        Trajet tempTraj = JsonParser.deserialiseTrajet(new JSONObject(body));
-                        tempTraj.setDepart(getAddresse(tempTraj.remoteDepartureAdresse));
-                        tempTraj.setDestination(getAddresse(tempTraj.remoteArrivalAdresse));
-                        p.addTrajet(tempTraj);
-                    }
-                }
+                if(user != null)
+                    parcs = WEB.getUserParcoursWithTrajets(user.getLogin());
                 Log.i(TAG, "Get des parcours terminé avec succès");
             } catch (Exception e) {
                 m_Exp = e;
             }
             return null;
-        }
-
-        private Address getAddresse(String id){
-            try {
-
-                URI uri = new URI("https", WEB.URL, WEB.GET_ADRESSE(id), null, null);
-                HttpGet requeteGet = new HttpGet(uri);
-                requeteGet.addHeader("Content-Type", "application/json");
-
-                String body = m_ClientHttp.execute(requeteGet, new BasicResponseHandler());
-                Address tempAdresse = JsonParser.deserialiseAddresse(new JSONObject(body));
-
-                return tempAdresse;
-            }catch (Exception e){
-                throw new IllegalArgumentException();
-            }
         }
         // Méthode exécutée SYNChrone après l'exécution de la tâche asynchrone.
         // Elle reçoit en paramètre la valeur de retour de "doInBackground".

@@ -12,9 +12,15 @@
     <string name="lbl_histroy">Historique</string>
     <string name="lbl_route">Parcours</string>
     <string name="lbl_my_route">Mes Parcours</string>
+    <string name="lbl_my_route_choice">Choisir un parcours pour la demande</string>
+    <string name="lbl_no_item_trajet">Veuillez créer un trajet pour pouvoir participer </string>
+    <string name="lbl_no_item_parcours">Veuillez créer un parcours pour pouvoir ajouter les trajets</string>
     <string name="lbl_published_routes">Parcours publiés</string>
     <string name="lbl_published_trajets">Trajets publiés</string>
     <string name="lbl_my_trajet">Mes Trajets</string>
+    <string name="lbl_my_trajet_choice">Choisir un trajet pour la demande</string>
+    <string name="msg_alarm_on">Notifications activés</string>
+    <string name="new_request">Nouvelle demande</string>
 
     <!-- Home page-->
     <string name="lbl_profil">Profil</string>
@@ -27,6 +33,12 @@
     <string name="lbl_newDepart">Nouveau Départ</string>
     <string name="lbl_newParcours">Nouveau Parcours</string>
     <string name="lbl_driver">Conducteur</string>
+    <string name="lbl_proposed_parc">Parcours proposé</string>
+    <string name="lbl_curr_parc">Parcours</string>
+    <string name="lbl_curr_parc_trajs">Trajets du parcours</string>
+    <string name="lbl_proposed_tra">Trajet proposé</string>
+    <string name="lbl_my_tra">Mon Trajet</string>
+    <string name="lbl_my_parc">Mon parcours</string>
     <string name="lbl_passenger">Passager</string>
 
     <string name="lbl_dicentrix">http://dicentrix.com</string>
@@ -34,6 +46,7 @@
     <!-- Actions-->
     <string name="lbl_connection">Connexion</string>
     <string name="lbl_cancel">Annuler</string>
+    <string name="lbl_request">Envoyer</string>
     <string name="lbl_noAcount">Je n\'ai pas de compte</string>
     <string name="lbl_validate">Valider</string>
     <string name="lbl_publish">Publier</string>
@@ -54,6 +67,13 @@
     <string name="lbl_male">Homme</string>
     <string name="lbl_female">Femme</string>
     <string name="lbl_addresse">Adresse :</string>
+    <string name="lbl_request_traj">Ajouter mon parcours</string>
+    <string name="lbl_find_parc">Trouver un parcours</string>
+    <string name="lbl_back">Retour</string>
+    <string name="lbl_parc_consult">Consulter son parcours</string>
+    <string name="lbl_accept_request">Accepter la demande</string>
+    <string name="lbl_delete_request">Supprimer la demande</string>
+    <string name="lbl_request_parc">Ajouter mon trajet</string>
 
     <string name="lbl_coordinates">Coordonées</string>
     <string name="lbl_day">Jour</string>
@@ -84,8 +104,11 @@
     <string name="err_cannotBeEmpty">Les champs ne peuvent pas être vide.</string>
     <string name="err_passwordMismatch">Le mot de passe ne correspond pas</string>
     <string name="err_invalidConnection">Connection invalide.</string>
+    <string name="err_invalidCredentials">Combinaison invalide. Vérifier votre mot de passe et votre nom utilisateur.</string>
     <string name="err_signUpInvalidLogin">Le nom d\'utilisateur est déjà utilisé.</string>
     <string name="err_com">Erreur de communication, réessayez</string>
+    <string name="err_no_choice">Aucune element n\'a été selectionné</string>
+    <string name="err_com_google">Erreur de communication avec le service de geolocalisation</string>
     <string name="err_server_inscription">Erreur lors de la création de votre profile.</string>
     <string name="err_no_date_time">Veuillez choisir la date du parcours</string>
     <string name="err_no_price">Veuillez indiquer le prix du parcours</string>
@@ -94,6 +117,7 @@
 
     <string name="succ_parcours_creation">Parcours publié avec succès</string>
     <string name="succ_trajet_creation">Trajet publié avec succès</string>
+    <string name="succ_request">Operation terminé avec succès</string>
 
     <string name="title_activity_dashboard">Dashboard</string>
 

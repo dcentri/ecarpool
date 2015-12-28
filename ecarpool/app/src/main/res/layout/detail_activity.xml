@@ -23,6 +23,11 @@
                 android:layout_height="30dp"
                 android:text="@string/lbl_driver"
                 />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
             <TextView
                 android:layout_centerVertical="true"
                 android:layout_width="match_parent"
@@ -36,6 +41,33 @@
                 android:paddingBottom="5dp"
                 android:paddingTop="2dp"
                 android:layout_marginBottom="5dp"/>
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColorHint="@color/grey"
+                android:id="@+id/txtPhone"
+                android:inputType="text"
+                android:textColor="@color/white"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="2dp"
+                android:layout_marginBottom="5dp"/>
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColorHint="@color/grey"
+                android:id="@+id/txtEmail"
+                android:inputType="text"
+                android:textColor="@color/white"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="2dp"
+                android:layout_marginBottom="5dp"/>
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"
@@ -134,7 +166,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:layout_width="50dp"
+                android:layout_width="wrap_content"
                 android:textColor="@color/black"
                 android:layout_height="30dp"
                 android:text="@string/lbl_frequency"
@@ -157,9 +189,34 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/black"
+                android:id="@+id/lblPlaces"
+                android:layout_height="30dp"
+                android:text="@string/lbl_nbPlaces"
+                />
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:id="@+id/txtPlaces"
+                android:inputType="text"
+                android:textColor="@color/white"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="2dp"
+                android:layout_marginBottom="5dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
                 android:layout_width="50dp"
                 android:textColor="@color/black"
                 android:layout_height="30dp"
+                android:id="@+id/lblElementPrice"
                 android:text="@string/lbl_price"
                 />
             <TextView
@@ -179,10 +236,10 @@
         <Button
             android:layout_width="220dp"
             android:background="@drawable/green_button"
-            android:id="@+id/btnCreateParcours"
-            android:onClick="chooseElement"
+            android:id="@+id/btnSendRequest"
+            android:onClick="RequestElement"
             android:layout_height="36dp"
-            android:text="@string/lbl_publish"
+            android:text="@string/lbl_request_traj"
             style="@style/button_text"
             android:gravity="center"
             android:paddingBottom="5dp"

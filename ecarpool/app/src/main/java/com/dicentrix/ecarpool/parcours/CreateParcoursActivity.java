@@ -79,7 +79,8 @@ public class CreateParcoursActivity extends FragmentActivity implements OnMapRea
                         markerDepPlace =JsonParser.deseriliaseLatLong(new JSONObject(departure.fullDetails));
                         Marker departureM = mMap.addMarker(new MarkerOptions().position(markerDepPlace).title(departure.description));
                         builder.include(departureM.getPosition());
-                        //mMap.addMarker(new MarkerOptions().position(JsonParser.deseriliserLatLong(new JSONObject(departure.fullDetails))).title("Garneau"));
+                    }else{
+                        Toast.makeText(this, getString(R.string.err_com_google), Toast.LENGTH_LONG);
                     }
                 }
 
