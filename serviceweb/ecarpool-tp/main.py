@@ -40,6 +40,8 @@ def add_trajet(object, id):
         newTrajet = Trajet()
 
     newTrajet.idAuthor = object['idAuthor']
+    if('booked' in object):
+        newTrajet.booked = object['booked']
     newTrajet.departureDateTime = datetime.strptime(object['departureDateTime'], '%b %d %Y %I:%M%p')
     newTrajet.arrivalDateTime = datetime.strptime(object['arrivalDateTime'], '%b %d %Y %I:%M%p')
     newTrajet.frequency = object['frequency']
@@ -446,34 +448,159 @@ class ParcoursHandler(webapp2.RequestHandler):
             logging.error('%s', traceback.format_exc())
             self.error(500)
 
-class TrajetParcoursHandler(webapp2.RequestHandler):
+class ParcoursTrajetHandler(webapp2.RequestHandler):
 
     def put(self, login, idParcours, idTrajet):
         try:
-            cle_user = ndb.Key('User', login)
+            # Méthode pour les passagers qui veulent ajouter leur trajet à un parcours''''
+            cle_user_initiator = ndb.Key('User', login)
             cle_parcours = ndb.Key('Parcours', long(idParcours))
             cle_trajet = ndb.Key('Trajet', long(idTrajet))
-            user = cle_user.get()
+            user_initiator = cle_user_initiator.get()
             parcours = cle_parcours.get()
             trajet = cle_trajet.get()
-            if user is None or parcours is None or trajet is None:
+            if user_initiator is None or parcours is None or trajet is None:
+                self.error(400)
+                return
+            cle_user_target = ndb.Key('User', parcours.driver)
+            user_target = cle_user_target.get()
+            msg_dict_out = {}
+            if idParcours not in user_initiator.listDemandesParcours and idTrajet not in user_target.listeDemandesTrajet and not trajet.booked:
+                user_target.listeDemandesTrajet.append(idTrajet)
+                msg = Messages()
+                msg.sender = login
+                msg.to = parcours.driver;
+                msg.message = user_initiator.firstName + u' vous a envoyé une demande de covoiturage'
+                msg.refParcour = long(idParcours)
+                msg.refTrajet = long(idTrajet)
+                cle = msg.put()
+                user_target.put()
+                msg_dict_out['succes'] = "La demande de covoiturage a été envoyé avec succès."
+            elif idParcours in user_initiator.listDemandesParcours and len(parcours.trajets) < parcours.nbPlaces and idTrajet not in parcours.trajets and not trajet.booked:
+                parcours.trajets.append(long(idTrajet))
+                user_initiator.listDemandesParcours.remove(idParcours)
+                trajet.booked = True;
+                msg = Messages()
+                msg.sender = login
+                msg.to = parcours.driver;
+                msg.message = user_initiator.firstName + u' a accepté votre demande de covoiturage'
+                msg.refParcour = long(idParcours)
+                msg.refTrajet = long(idTrajet)
+                cle = msg.put()
+                user_target.put()
+                parcours.put()
+                trajet.put()
+                user_initiator.put()
+                self.response.set_status(200)
+                msg_dict_out['succes'] = "Le trajet a été ajouté avec succès"
+            elif len(parcours.trajets) >= parcours.nbPlaces or trajet.booked:
+                if idParcours in user_initiator.listDemandesParcours:
+                    user_initiator.listDemandesParcours.remove(idParcours)
+                    user_initiator.put()
+                    msg_dict_out['erreur'] = "Le parcours est déjà complet"
+                else:
+                    msg_dict_out['erreur'] = "Impossible de compléter votre requête."
+            else:
+                msg_dict_out['erreur'] = "Impossible de compléter votre requête.Votre demande est déjà envoyé ou la requête manque des données"
+                self.response.set_status(400)
+            self.response.headers['Content-Type'] = ('application/json;' +
+                                                     ' charset=utf-8')
+
+            response_json = json.dumps(msg_dict_out, default=serialiser_pour_json)
+            self.response.out.write(response_json)
+        except (db.BadValueError, ValueError, KeyError):
+            logging.error('%s', traceback.format_exc())
+            self.error(400)
+
+        except Exception:
+            logging.error('%s', traceback.format_exc())
+            self.error(500)
+
+    def delete(self, login, idParcours, idTrajet):
+        try:
+            cle_user_initiator = ndb.Key('User', login)
+            cle_parcours = ndb.Key('Parcours', long(idParcours))
+            cle_trajet = ndb.Key('Trajet', long(idTrajet))
+            user_initiator = cle_user_initiator.get()
+            parcours = cle_parcours.get()
+            trajet = cle_trajet.get()
+            if user_initiator is None or parcours is None or trajet is None:
                 self.error(400)
                 return
 
-            msg_dict_out = {}
-            if idTrajet not in user.listeDemandesTrajet:
-                user.listeDemandesTrajet.append(idTrajet)
-                user.put()
-                msg_dict_out['succes'] = "La demande de covoiturage a été envoyé avec succès."
-            elif idTrajet in user.listeDemandesTrajet and len(parcours.trajets) < parcours.nbPlaces and idTrajet not in parcours.trajets:
-                parcours.trajets.append(long(idTrajet))
-                user.listeDemandesTrajet.remove(idTrajet)
-                parcours.put()
-                user.put()
-                self.response.set_status(200)
-                msg_dict_out['succes'] = "Le trajet a été ajouté avec succès"
+            if idParcours in user_initiator.listDemandesParcours:
+                user_initiator.listDemandesParcours.remove(idParcours)
+                user_initiator.put()
+                msg_dict_out['succes'] = "La démande a été annulé avec succès"
             else:
                 msg_dict_out['erreur'] = "Impossible de compléter votre requête."
+            self.response.headers['Content-Type'] = ('application/json;' +
+                                                     ' charset=utf-8')
+
+            response_json = json.dumps(msg_dict_out, default=serialiser_pour_json)
+            self.response.out.write(response_json)
+            self.response.set_status(204)
+        except (db.BadValueError, ValueError, KeyError):
+            logging.error('%s', traceback.format_exc())
+            self.error(400)
+
+        except Exception:
+            logging.error('%s', traceback.format_exc())
+            self.error(500)
+
+class TrajetParcoursHandler(webapp2.RequestHandler):
+#Classe pour les conducteur qui veulent ajouter un trajet à leur parcours
+    def put(self, login, idParcours, idTrajet):
+        try:
+            cle_user_initiator = ndb.Key('User', login)
+            cle_parcours = ndb.Key('Parcours', long(idParcours))
+            cle_trajet = ndb.Key('Trajet', long(idTrajet))
+            user_initiator = cle_user_initiator.get()
+            parcours = cle_parcours.get()
+            trajet = cle_trajet.get()
+            if user_initiator is None or parcours is None or trajet is None:
+                self.error(400)
+                return
+            cle_user_target = ndb.Key('User', trajet.idAuthor)
+            user_target = cle_user_target.get();
+            msg_dict_out = {}
+            ''' Ajouter une nouvelle demande'''
+            if idTrajet not in user_initiator.listeDemandesTrajet and idParcours not in user_target.listDemandesParcours and not trajet.booked:
+                user_target.listDemandesParcours.append(idParcours)
+                msg = Messages()
+                msg.sender = login
+                msg.to = trajet.idAuthor;
+                msg.message = user_initiator.firstName + u' vous a envoyé une demande de covoiturage'
+                msg.refParcour = long(idParcours)
+                msg.refTrajet = long(idTrajet)
+                cle = msg.put()
+                user_target.put()
+                msg_dict_out['id'] = cle.id();
+                msg_dict_out['succes'] = "La demande de covoiturage a été envoyé avec succès."
+            elif idTrajet in user_initiator.listeDemandesTrajet and len(parcours.trajets) < parcours.nbPlaces and idTrajet not in parcours.trajets and not trajet.booked:
+                ''' Accepter une demande et ajouté un trajet à un parcours'''
+                parcours.trajets.append(long(idTrajet))
+                user_initiator.listeDemandesTrajet.remove(idTrajet)
+                msg = Messages()
+                msg.sender = login
+                msg.to = trajet.idAuthor;
+                msg.message = user_initiator.firstName + u' a accepté votre demande de covoiturage'
+                msg.refParcour = long(idParcours)
+                msg.refTrajet = long(idTrajet)
+                cle = msg.put()
+                trajet.booked = True;
+                parcours.put()
+                trajet.put()
+                user_initiator.put()
+                self.response.set_status(200)
+                msg_dict_out['succes'] = "Le trajet a été ajouté avec succès"
+            elif len(parcours.trajets) >= parcours.nbPlaces or trajet.booked:
+                if idTrajet in user_initiator.listeDemandesTrajet:
+                    user_initiator.listeDemandesTrajet.remove(idTrajet)
+                    user_initiator.put()
+                    msg_dict_out['erreur'] = "Impossible d'ajouté un trajet. Le parcours est complet"
+            else:
+                msg_dict_out['erreur'] = "Impossible de compléter votre requête. Votre demande est déjà envoyé ou la requête manque des données"
                 self.response.set_status(400)
             self.response.headers['Content-Type'] = ('application/json;' +
                                                      ' charset=utf-8')
@@ -586,12 +713,19 @@ class MessageHandler(webapp2.RequestHandler):
             self.error(500)
     def delete(self, login, messageId):
         try:
+            cle_user = ndb.Key('User', login)
             cle = ndb.Key('Messages', long(messageId))
             msg = cle.get()
+            destiUser = cle_user.get()
 
-            if msg is None:
+            if msg is None or destiUser is None or msg.to != login:
                 self.error(400)
                 return
+            if(str(msg.refParcour) in destiUser.listDemandesParcours):
+                destiUser.listDemandesParcours.remove(str(msg.refParcour))
+            elif (str(msg.refTrajet) in destiUser.listeDemandesTrajet):
+                destiUser.listeDemandesTrajet.remove(str(msg.refTrajet))
+            destiUser.put();
             msg.key.delete()
             self.response.set_status(204)
         except (db.BadValueError, ValueError, KeyError):
@@ -684,6 +818,7 @@ class TrajetHandler(webapp2.RequestHandler):
             else:
                 liste_trajets = []
                 requete = Trajet.query()
+                requete = requete.filter(Trajet.booked == False)
                 for trj in requete:
                     trj_dict = trj.to_dict()
                     trj_dict['id'] = trj.key.id()
@@ -728,9 +863,13 @@ app = webapp2.WSGIApplication(
         webapp2.Route(r'/parcours/<id>',
                       handler=ParcoursHandler,
                       methods=['GET', 'PUT', 'DELETE']),
-     # créer une nouvelle utilisateur.
+     # Ajouter un trajet à un parcours.
         webapp2.Route(r'/user/<login>/parcours/<idParcours>/trajet/<idTrajet>',
                       handler=TrajetParcoursHandler,
+                      methods=['PUT']),
+     # Ajouter un parcours à un trajet.
+        webapp2.Route(r'/user/<login>/trajet/<idTrajet>/parcours/<idParcours>',
+                      handler=ParcoursTrajetHandler,
                       methods=['PUT']),
      # créer une nouvelle utilisateur.
         webapp2.Route(r'/trajet/<idtrajet>/parcours',

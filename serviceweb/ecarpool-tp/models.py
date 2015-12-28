@@ -11,6 +11,7 @@ class Trajet(ndb.Model):
     departureDateTime = ndb.DateTimeProperty(required=False)
     arrivalDateTime = ndb.DateTimeProperty(required=False)
     frequency = ndb.StringProperty(required=True)
+    booked = ndb.BooleanProperty(default=False)
 
 # Model concernant un site de pêche dans le service web
 class Parcours(ndb.Model):
@@ -26,6 +27,7 @@ class Messages(ndb.Model):
     to = ndb.StringProperty(required=True)# Check type
     message = ndb.StringProperty(required=True)# Check type
     refParcour = ndb.IntegerProperty(required=False)
+    refTrajet = ndb.IntegerProperty(required=False)
 
 # Model concernant un utilisateur dans le service web
 class User(ndb.Model):
